@@ -1,4 +1,4 @@
-import java.lang.Exception
+import kotlin.Exception
 
 fun main() {
     val bank = Bank()
@@ -13,25 +13,29 @@ fun main() {
             when (status) {
                 Status.Browse -> bank.browseAccounts()
                 Status.Open -> {
-                    print("Введите имя счёта (поле не должно быть пустым): ")
                     val name = handler.getValidName()
                     bank.createAccount(name)
                 }
 
                 Status.Refill -> {
-                    print("Введите сумму пополнения: ")
+                    val account = bank.getValidAccount(true)
                     val sum = handler.getValidSum()
-                    val account = bank.getValidAccount()
                     bank.refillAccount(account, sum)
                 }
 
                 Status.Transfer -> {
-                    val pair = handler.getValidPairOfAccounts()
+                    val pair = bank.getValidPairOfAccounts()
                     val src = pair.first
                     val dest = pair.second
-                    print("Введите сумму пополнения: ")
-                    val sum = handler.getValidSum()
-                    bank.transferMoney(src, dest, sum)
+                    while (true) {
+                        try {
+                            val sum = handler.getValidSum()
+                            bank.transferMoney(src, dest, sum)
+                            break
+                        } catch (e: Exception) {
+                            println(e.message)
+                        }
+                    }
                 }
 
                 else -> {}
@@ -40,6 +44,4 @@ fun main() {
             println(e.message)
         }
     } while (status != Status.Exit)
-
-    println("Работа завершена")
 }
